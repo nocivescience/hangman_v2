@@ -12,22 +12,36 @@ const wordsList = [
     'sql',
     'ajax',
 ];
-const targetsEl=document.getElementsByClassName('targets');
+const targetsEl=Array.from(document.getElementsByClassName('targets'));
 const wrongEl=[];
 const correctEl=[];
-const innerWord=document.getElementById('innerWord');
+const innerWord=document.getElementById('inner-word');
 const wordEl=document.getElementById('word');
 const wordSelected=wordsList[Math.floor(Math.random()*wordsList.length)];
-const popupEl=document.getElementById('popup');
+const gameOverEl=document.getElementById('game-over');
+const gameWinEl=document.getElementById('game-win');
+const usedKeyEl=document.getElementById('used-key');
+const wrongKeyEl=document.getElementById('wrong-key');
 function displayWord(word) {
     innerWord.innerHTML=`${wordSelected.split('').map(
         (letter) => (correctEl.includes(letter) ? letter : '_')
     ).join('')}`;
     const innerWordReplace=innerWord.innerHTML.replace(/\s/g, '');
     if(innerWordReplace===wordSelected){
-        popupEl.classList.add('appear');
+        gameWinEl.className='appear';
     }
 };
+function updateWrong(letter) {
+    wrongKeyEl.classList.toggle('appear');
+    targetsEl.forEach((target,index) => {   //ojo aca es mejor trabajar con querySelectorAll
+        if(index<wrongEl.length){
+            target.style.backgroundColor='green';
+        }
+        if(wrongEl.length===targetsEl.length){
+            gameOverEl.className='appear';
+        }
+    });
+}
 window.addEventListener('keydown', (e) => {
     if(
         e.key==='a'||
@@ -91,9 +105,13 @@ window.addEventListener('keydown', (e) => {
             }else{
                 alert('You already used this letter');
             }
+        }else{
+            if(!wrongEl.includes(letter)){
+                wrongEl.push(letter);
+                updateWrong(letter);
+            }else{
+                alert('You already used this letter');
+            }
         }
-        console.log(wordSelected);
-        console.log(correctEl);
-        console.log(wrongEl);
     }
 });
